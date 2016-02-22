@@ -28,8 +28,7 @@ function connect(dsn::ASCIIString, usr::ASCIIString, pwd::ASCIIString,
   r = ccall((:isc_attach_database, :fbclient),
     Bool, (Ptr{UInt8}, UInt16, Ptr{UInt8}, Ptr{UInt}, UInt16, Ptr{UInt8}),
     stat, 0, dsn.data, cn, 0, C_NULL)
-  r && (pr_error(stat, "attach database"); return nothing)
-  cn[1] == 0 && return nothing
+  (r || (cn[1] == 0)) && (pr_error(stat, "attach database"); return nothing)
   return cn # Firebird(dsn)
 end
 
