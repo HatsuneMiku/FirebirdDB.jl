@@ -1,5 +1,20 @@
+# -*- coding: utf-8 -*-
+
 module FirebirdDB
 
-# package code goes here
+export connect, close
 
-end # module
+immutable Firebird
+  dsn::ASCIIString
+end
+
+function connect(dsn::ASCIIString, usr::ASCIIString, pwd::ASCIIString,
+  charset::ASCIIString="UTF8")
+  return Firebird(dsn)
+end
+
+function close(cn)
+  return true
+end
+
+end
