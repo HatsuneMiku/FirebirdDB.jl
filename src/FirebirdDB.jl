@@ -49,7 +49,7 @@ function connect(dsn::ASCIIString, usr::ASCIIString, pwd::ASCIIString,
   fb = Firebird(dsn, usr, pwd, charset)
   r = ccall((:isc_attach_database, FBCLIENT), Bool,
     (Ptr{UInt8}, UInt16, Ptr{UInt8}, Ptr{Ptr{Void}}, UInt16, Ptr{UInt8}),
-    fb.stat, 0, [fb.dsn.data; [0x00]], fb.cn, 0, C_NULL)
+    fb.stat, sizeof(fb.dsn.data), fb.dsn.data, fb.cn, 0, C_NULL)
   if r || (fb.cn[1] == C_NULL)
     return pr_error(fb.stat, "attach database", nothing)
   end
@@ -72,6 +72,7 @@ function in_transaction(fb::Firebird, s::AbstractString)
     fb.stat, fb.tr, 1, fb.cn, 0, C_NULL)
   r && return pr_error(fb.stat, "in: start transaction", false)
   # for ss in split(s, "\n") # to handle SubString convert(UTF8String, ss).data
+    println(@sprintf "[%s]" s)
     r = ccall((:isc_dsql_execute_immediate, FBCLIENT), Bool,
       (Ptr{UInt8}, Ptr{Ptr{Void}}, Ptr{Ptr{Void}}, UInt16,
         Ptr{UInt8}, UInt16, Ptr{XSQLDA}),
